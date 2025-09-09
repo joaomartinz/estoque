@@ -61,14 +61,14 @@ def mostrar_estoque():
     print("Número de produtos diferentes:", produtos["id_produto"].nunique())
 
 def produtos_baixo_estoque():
-    baixo_estoque = produtos[produtos["quantidades-estoque_atual"] < 10]
+    baixo_estoque = produtos[produtos["quantidade_estoque_atual"] < 10]
     print("\n Produtos com baixo estoque:")
     print(baixo_estoque)
 
 def valor_total_estoque():
     produtos["valor_total"] = produtos["quantidade_estoque_atual"] * produtos["preco_unitario"]
     total = produtos["valor_total"].sum()
-    print(f"\n Valor total do estoque: R$ {total:,.2f}")
+    print(f"\n Valor total do estoque: R$ {total:.2f}")
 
 # === Funções Relatórios ===
 def estoque_por_fornecedor():
@@ -77,13 +77,13 @@ def estoque_por_fornecedor():
     print("\n Estoque total por fornecedor:")
     print(estoque_fornecedor)
 
-    estoque_fornecedor.plot(kind="bar", figsize=(8,4))
-    plt.title("Estoque por fornecedor")
-    plt.ylabel("Quantidade em estoque")
-    plt.xlabel("Fornecedor")
-    plt.xticks(rotation=45)
-    plt.tight_layout()
-    plt.show()
+    # estoque_fornecedor.plot(kind="bar", figsize=(8,4))
+    # plt.title("Estoque por fornecedor")
+    # plt.ylabel("Quantidade em estoque")
+    # plt.xlabel("Fornecedor")
+    # plt.xticks(rotation=45)
+    # plt.tight_layout()
+    # plt.show()
 
 def movimentacoes_mensais():
     movimentacoes["data_move"] = pd.to_datetime(movimentacoes["data_move"])
@@ -94,12 +94,12 @@ def movimentacoes_mensais():
     print("\n Saídas (vendas) por mês:")
     print(vendas_mes)
 
-    vendas_mes.plot(kind="line", marker="o", figsize=(8,4))
-    plt.title("Saídas mensais (vendas)")
-    plt.ylabel("Quantidade")
-    plt.xlabel("Mês")
-    plt.tight_layout()
-    plt.show()
+    # vendas_mes.plot(kind="line", marker="o", figsize=(8,4))
+    # plt.title("Saídas mensais (vendas)")
+    # plt.ylabel("Quantidade")
+    # plt.xlabel("Mês")
+    # plt.tight_layout()
+    # plt.show()
 
 def top5_produtos_vendidos():
     saidas = movimentacoes[movimentacoes["tipo"]=="saida"]
@@ -108,13 +108,13 @@ def top5_produtos_vendidos():
     print("\n Top 5 produtos mais vendidos:")
     print(resultado[["id_produto","nome","quantidade"]])
 
-    resultado.plot(x="nome", y="quantidade", kind="bar", figsize=(8,4))
-    plt.title("Top 5 produtos mais vendidos")
-    plt.ylabel("Quantidade vendida")
-    plt.xlabel("Produto")
-    plt.xticks(rotation=45)
-    plt.tight_layout()
-    plt.show()
+    # resultado.plot(x="nome", y="quantidade", kind="bar", figsize=(8,4))
+    # plt.title("Top 5 produtos mais vendidos")
+    # plt.ylabel("Quantidade vendida")
+    # plt.xlabel("Produto")
+    # plt.xticks(rotation=45)
+    # plt.tight_layout()
+    # plt.show()
 
 def relatorio_fornecedores():
     prod_fornec = produtos.merge(fornecedores, on="id_Fornecedor", how="left")
@@ -164,10 +164,76 @@ def historico_produto():
     print("\nHistórico de movimentações do produto:")
     print(historico[["data_move","tipo","quantidade","nome"]])
 
-    historico.groupby("tipo")["quantidade"].sum().plot(
-        kind="bar", figsize=(6,4), title=f"Entradas x Saídas - Produto {pid}"
-    )
-    plt.ylabel("Quantidade")
-    plt.tight_layout()
-    plt.show()
+    # historico.groupby("tipo")["quantidade"].sum().plot(
+    #     kind="bar", figsize=(6,4), title=f"Entradas x Saídas - Produto {pid}"
+    # )
+    # plt.ylabel("Quantidade")
+    # plt.tight_layout()
+    # plt.show()
         
+# === Submenus ===
+def submenu_estoque():
+    while True:
+        print("\n -- MENU ESTOQUE ---")
+        print("1 - Estoque atual")
+        print("2 - Produtos com baixo estoque")
+        print("3 - Valor total do estoque")
+        print("0 - Voltar")
+        opcao = input("O que deseja acessar? ")
+
+        if opcao == "1": mostrar_estoque()
+        elif opcao == "2": produtos_baixo_estoque()
+        elif opcao == "3": valor_total_estoque()
+        elif opcao == "0": break
+        else: print("Opção inválida!")
+
+def submenu_relatorios():
+    while True:
+        print("\n--- MENU RELATÓRIOS ---")
+        print("1 - Estoque por fornecedor")
+        print("2 - Movimentações mensais")
+        print("3 - Top 5 produtos mais vendidos")
+        print("4 - Relatório de fornecedores")
+        print("5 - Exportar relatório (CSV/Excel)")
+        print("0 - Voltar")
+        opcao = input("Escolha uma opção: ")
+
+        if opcao == "1": estoque_por_fornecedor()
+        elif opcao == "2": movimentacoes_mensais()
+        elif opcao == "3": top5_produtos_vendidos()
+        elif opcao == "4": relatorio_fornecedores()
+        elif opcao == "5": exportar_relatorio()
+        elif opcao == "0": break
+        else: print(" Opção inválida")
+
+
+def submenu_consultas():
+    while True:
+        print("\n--- MENU CONSULTAS ---")
+        print("1 - Buscar produto (por ID ou nome)")
+        print("2 - Histórico de movimentações por produto")
+        print("0 - Voltar")
+        opcao = input("Escolha uma opção: ")
+
+        if opcao == "1": buscar_produto()
+        elif opcao == "2": historico_produto()
+        elif opcao == "0": break
+        else: print("Opção inválida.")
+        
+# === Menu Principal === 
+def menu():
+    while True:
+        print("\n DASHBOARD DE ESTOQUE")
+        print("1 - Estoque")
+        print("2 - Relatórios")
+        print("3 - Consultas")
+        print("0 - Sair")
+        opcao = input("O que deseja acessar? ")
+
+        if opcao == "1": submenu_estoque()
+        elif opcao == "2": submenu_relatorios()
+        elif opcao == "3": submenu_consultas()
+        elif opcao == "0": break
+        else: print("Opção inválida!")
+
+menu()
