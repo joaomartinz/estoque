@@ -53,6 +53,26 @@ def exportar_relatorio():
     else:
         print("Opção inválida")
 
+# === Funções Estoque ===
+def mostrar_estoque():
+    print("\n Estoque atual:")
+    print(produtos.head())
+    print("\nQuantidade total em estoque:", produtos["quantidade_estoque_atual"].sum())
+    print("Número de produtos diferentes:", produtos["id_produto"].nunique())
+
+def produtos_baixo_estoque():
+    baixo_estoque = produtos[produtos["quantidades-estoque_atual"] < 10]
+    print("\n Produtos com baixo estoque:")
+    print(baixo_estoque)
+
+def valor_total_estoque():
+    produtos["valor_total"] = produtos["quantidade_estoque_atual"] * produtos["preco_unitario"]
+    total = produtos["valor_total"].sum()
+    print(f"\n Valor total do estoque: R$ {total:,.2f}")
+
+
+
+
 
         
 
