@@ -123,5 +123,51 @@ def relatorio_fornecedores():
         print(f"\n {marca}")
         print(grupo[["id_produto","nome","quantidade_estoque_atual"]])
 
+# === Funções Consultas ===
+def buscar_produto():
+    print("\nBuscar produto")
+    escolha = input("(1) buscar por ID / (2) buscar por Nome ")
 
+    if escolha == "1":
+        try:
+            pid = int(input("Informe o ID do produto: "))
+            resultado = produtos[produtos["id_produto"] == pid]
+        except ValueError:
+            print("ID inválido.")
+            return
+    elif escolha == "2":
+        nome = input("Informe o nome do produto: ").lower()
+        resultado = produtos[produtos["nome"].str.lower().str.contains(nome)]
+    else:
+        print("Opção inválida.")
+        return
+
+    if resultado.empty:
+        print("Nenhum produto encontrado.")
+    else:
+        print("\nResultado da busca:")
+        print(resultado)
+
+def historico_produto():
+    try:
+        pid = int(input("\nInforme o ID do produto: "))
+        historico = movimentacoes[movimentacoes["id_produto"] == pid]
+    except ValueError:
+        print("ID inválido.")
+        return
+
+    if historico.empty:
+        print("Nenhum histórico encontrado.")
+        return
+
+    historico = historico.merge(produtos[["id_produto","nome"]], on="id_produto")
+    print("\nHistórico de movimentações do produto:")
+    print(historico[["data_move","tipo","quantidade","nome"]])
+
+    historico.groupby("tipo")["quantidade"].sum().plot(
+        kind="bar", figsize=(6,4), title=f"Entradas x Saídas - Produto {pid}"
+    )
+    plt.ylabel("Quantidade")
+    plt.tight_layout()
+    plt.show()
         
