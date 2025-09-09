@@ -70,10 +70,58 @@ def valor_total_estoque():
     total = produtos["valor_total"].sum()
     print(f"\n Valor total do estoque: R$ {total:,.2f}")
 
+# === Funções Relatórios ===
+def estoque_por_fornecedor():
+    prod_fornec = produtos.merge(fornecedores, on="id_Fornecedor", how="left")
+    estoque_fornecedor = prod_fornec.groupby("marca")["quantidade_estoque_atual"].sum()
+    print("\n Estoque total por fornecedor:")
+    print(estoque_fornecedor)
 
+    estoque_fornecedor.plot(kind="bar", figsize=(8,4))
+    plt.title("Estoque por fornecedor")
+    plt.ylabel("Quantidade em estoque")
+    plt.xlabel("Fornecedor")
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+    plt.show()
 
+def movimentacoes_mensais():
+    movimentacoes["data_move"] = pd.to_datetime(movimentacoes["data_move"])
+    vendas_mes = movimentacoes[movimentacoes["tipo"]=="saida"].groupby(
+        movimentacoes["data_move"].dt.to_period("M")
+    )["quantidade"].sum()
 
+    print("\n Saídas (vendas) por mês:")
+    print(vendas_mes)
 
-        
+    vendas_mes.plot(kind="line", marker="o", figsize=(8,4))
+    plt.title("Saídas mensais (vendas)")
+    plt.ylabel("Quantidade")
+    plt.xlabel("Mês")
+    plt.tight_layout()
+    plt.show()
+
+def top5_produtos_vendidos():
+    saidas = movimentacoes[movimentacoes["tipo"]=="saida"]
+    mais_vendidos = saidas.groupby("id_produto")["quantidade"].sum().nlargest(5)
+    resultado = mais_vendidos.reset_index().merge(produtos, on="id_produto")
+    print("\n Top 5 produtos mais vendidos:")
+    print(resultado[["id_produto","nome","quantidade"]])
+
+    resultado.plot(x="nome", y="quantidade", kind="bar", figsize=(8,4))
+    plt.title("Top 5 produtos mais vendidos")
+    plt.ylabel("Quantidade vendida")
+    plt.xlabel("Produto")
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+    plt.show()
+
+def relatorio_fornecedores():
+    prod_fornec = produtos.merge(fornecedores, on="id_Fornecedor", how="left")
+    print("\n Fornecedores e seus produtos:")
+    for marca, grupo in prod_fornec.groupby("marca"):
+        print(f"\n {marca}")
+        print(grupo[["id_produto","nome","quantidade_estoque_atual"]])
+
 
         
